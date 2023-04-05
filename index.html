@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build a 25 + 5 Clock</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const App = () => {
+            const [breakLength, setBreakLength] = React.useState(5)
+            const [sessionLength, setSessionLength] = React.useState(25)
+            const [timeLeft, setTimeLeft] = React.useState(1500) //user story #8 attempt
+            const [timerPlay, setTimerPlay] = React.useState(false)
+            const [timerTitle, setTimerTitle] = React.useState("Session")
+
+            const handleBreakIncrease = () => {
+                if (breakLength < 60)
+                setBreakLength(preState => preState + 1)
+            }
+            const handleBreakDescrease = () => {
+                if (breakLength > 1)
+                setBreakLength(preState => preState - 1)
+            }
+
+            const handleSessionIncrease = () => {
+                if (sessionLength < 60)
+                setSessionLength(preState => preState + 1)
+                setTimeLeft(preState => preState + 60)
+            }
+            const handleSessionDecrease = () => {
+                if (sessionLength > 1)
+                setSessionLength(preState => preState - 1)
+                setTimeLeft(preState => preState - 60)
+            }
+
+            // if both are true. timerPlay so it doesn't play automatically
+            const timeOutForStartStop = setTimeout(() => {
+                if (timeLeft && timerPlay) {
+                    setTimeLeft(timeLeft - 1)
+                }
+            }, 1000)
+            const startStop = () => {
+                clearTimeout(timeOutForStartStop)
+                setTimerPlay(!timerPlay)
+            }
+
+            const timeFormatter = () => {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = Math.floor(timeLeft % 60);
+                let phMins = "0";
+                let phSecs = "0";
+                if (secs < 10) {
+                    phSecs = "0" + secs
+                } else {
+                    phSecs = secs
+                }
+                if (mins < 10) {
+                    phMins = "0" + mins
+                } else {
+                    phMins = mins
+                }
+                return `${phMins}:${phSecs}`
+            }
+            
+            const titleDisplay = () => {
+                if(!timeLeft && timerTitle === "Session") {
+                    setTimerTitle("Break")
+                    setTimeLeft(breakLength * 60)
+                }
+                if(!timeLeft && timerTitle === "Break")
+                setTimerTitle("Session")
+                setTimeLeft(sessionLength * 60)
+            }
+
+            const handleResetTimer = () => {
+                clearTimeout(timeOutForStartStop)
+                setBreakLength(5)
+                setSessionLength(25)
+                setTimeLeft(1500)
+                setTimerPlay(false)
+                setTimerTitle("Session")
+            }
+
+            const title = timerTitle === "Session" ? "Session" : "break"
+            
+
+            return(
+                <div className="ms-5">
+                    <div id="break-label">Break Length</div>
+                    <button id="break-increment" onClick={handleBreakIncrease}>Increase</button>
+                    <div id="break-length">{breakLength}</div>
+                    <button id="break-decrement" onClick={handleBreakDescrease}>Decrease</button>
+                    <section id="session-label">Session Length</section>
+                    <button id="session-increment" onClick={handleSessionIncrease}>Increase</button>
+                    <div id="session-length">{sessionLength}</div>
+                    <button id="session-decrement" onClick={handleSessionDecrease}>Decrease</button>
+                    <div id="timer-label">{title}</div>
+                    <div id="time-left">{timeFormatter()}</div> {/*user story #8 attempt*/}
+                    <button id="start_stop" onClick={startStop}> Start/stop </button>
+                    <button id="reset" onClick={handleResetTimer}>Reset</button>
+                </div>
+            )
+        }
+
+
+        const domContainer = document.getElementById('root')
+        const myRoot = ReactDOM.createRoot(domContainer)
+        myRoot.render(<App />)
+    </script>
+    
+</body>
+</html>
